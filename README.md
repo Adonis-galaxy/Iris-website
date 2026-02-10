@@ -1,4 +1,4 @@
 # Iris — Project Page
 
-Project page for **Iris: Integrating Language into Diffusion-based Monocular Depth Estimation** (CVPR 2026).
+Project page for **Iris: Integrating Language into Diffusion-based Monocular Depth Estimation**.
 
