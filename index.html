@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Iris — Integrating Language into Diffusion-based Monocular Depth Estimation</title>
+  <link rel="icon" href="assets/Iris_logo.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #fafbfc;
+      --bg-pure: #ffffff;
+      --surface: #f2f4f6;
+      --surface-warm: #f6f5f4;
+      --text: #1c1e21;
+      --text-muted: #5f6368;
+      --accent: #2563eb;
+      --accent-soft: #eff6ff;
+      --iris-purple: #9b87c4;
+      --iris-green: #8da382;
+      --iris-green-soft: rgba(141, 163, 130, 0.12);
+      --border: #e8eaed;
+      --shadow: 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+      --shadow-md: 0 8px 24px rgba(0,0,0,0.06);
+      --radius: 14px;
+      --radius-sm: 10px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.68;
+      -webkit-font-smoothing: antialiased;
+      font-size: 16px;
+    }
+    .wrap {
+      max-width: 840px;
+      margin: 0 auto;
+      padding: 3.5rem 2rem 5rem;
+    }
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+      margin-bottom: 1.75rem;
+      padding-bottom: 1.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .page-logo {
+      flex-shrink: 0;
+      display: block;
+    }
+    .page-logo img {
+      height: 72px;
+      width: auto;
+      display: block;
+    }
+    .title-block { min-width: 0; }
+    h1 {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: clamp(1.85rem, 4.5vw, 2.35rem);
+      font-weight: 400;
+      margin: 0;
+      letter-spacing: -0.025em;
+      color: var(--text);
+      line-height: 1.22;
+    }
+    .title-note {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin: 0.35rem 0 0;
+    }
+    .authors {
+      font-size: 0.9375rem;
+      color: var(--text-muted);
+      margin-bottom: 0.25rem;
+      letter-spacing: 0.01em;
+    }
+    .authors a {
+      color: var(--iris-purple);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .authors a:hover { text-decoration: underline; }
+    .iris-highlight { color: var(--iris-purple); }
+    .title-iris { color: var(--iris-green); }
+    .affiliations {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+    }
+    .links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 2.5rem;
+    }
+    .links a {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.6rem 1.25rem;
+      background: var(--text);
+      color: var(--bg-pure);
+      text-decoration: none;
+      border-radius: 999px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: transform 0.15s, box-shadow 0.2s;
+    }
+    .links a:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
+    }
+    .links a:last-child {
+      background: var(--bg-pure);
+      color: var(--text);
+      border: 1.5px solid var(--border);
+    }
+    .links a:last-child:hover {
+      background: var(--surface);
+      border-color: var(--iris-green);
+      color: var(--text);
+    }
+    h2 {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: 1.55rem;
+      font-weight: 400;
+      margin: 3.25rem 0 1.1rem;
+      color: var(--text);
+      letter-spacing: -0.02em;
+      position: relative;
+      padding-left: 1rem;
+    }
+    h2::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.35em;
+      width: 4px;
+      height: 0.85em;
+      background: var(--iris-green);
+      border-radius: 2px;
+    }
+    h2:first-of-type { margin-top: 0; }
+    .abstract {
+      background: var(--bg-pure);
+      border-radius: var(--radius);
+      padding: 1.75rem 2rem;
+      margin-bottom: 2rem;
+      font-size: 0.9375rem;
+      color: var(--text-muted);
+      line-height: 1.75;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--iris-green);
+    }
+    .abstract strong { color: var(--text); }
+    .teaser-fig {
+      width: 100%;
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 0.75rem;
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border);
+    }
+    .teaser-fig.teaser-small {
+      max-width: 75%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .teaser-fig img { width: 100%; height: auto; display: block; }
+    .caption {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      margin-top: 0.6rem;
+      margin-bottom: 2rem;
+      line-height: 1.55;
+    }
+    .caption strong { color: var(--text); }
+    ul.findings {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 2rem;
+    }
+    ul.findings li {
+      position: relative;
+      padding-left: 1.5rem;
+      margin-bottom: 0.85rem;
+      font-size: 0.9375rem;
+      color: var(--text-muted);
+    }
+    ul.findings li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.55rem;
+      width: 6px;
+      height: 6px;
+      background: var(--iris-green);
+      border-radius: 50%;
+    }
+    ul.findings strong { color: var(--text); }
+    .fig-grid {
+      display: grid;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+    .fig-grid .fig-item img {
+      width: 100%;
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
+    }
+    .fig-grid .fig-item.fig-small {
+      max-width: 75%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .fig-grid .fig-item.figure-mid {
+      max-width: 85%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .results-intro {
+      color: var(--text-muted);
+      font-size: 0.9375rem;
+      margin-bottom: 1.25rem;
+    }
+    .table-wrap { overflow-x: auto; margin-bottom: 2rem; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
+    }
+    th, td {
+      padding: 0.6rem 0.85rem;
+      text-align: left;
+      border: none;
+    }
+    th {
+      background: var(--surface);
+      color: var(--text);
+      font-weight: 600;
+    }
+    td { color: var(--text-muted); }
+    tr:nth-child(even) { background: var(--bg-pure); }
+    tr:hover { background: var(--surface); }
+    .highlight-row { background: var(--iris-green-soft) !important; }
+    .highlight-row td { color: var(--text); }
+    .bibtex {
+      background: var(--bg-pure);
+      border-radius: var(--radius-sm);
+      padding: 1.25rem 1.5rem;
+      font-family: 'SF Mono', ui-monospace, monospace;
+      font-size: 0.8rem;
+      line-height: 1.6;
+      overflow-x: auto;
+      color: var(--text-muted);
+      white-space: pre;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+    footer {
+      margin-top: 4rem;
+      padding-top: 1.75rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+    }
+    footer a {
+      color: var(--iris-green);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header-row">
+      <div class="title-block">
+        <h1><span class="title-iris">Iris</span>: Integrating Language into Diffusion-based Monocular Depth Estimation</h1>
+        <!-- <p class="title-note">Iris = Integrating Language into Diffusion-based monocular depth estimation</p> -->
+      </div>
+      <a class="page-logo" href="#" aria-label="Iris">
+        <img src="assets/Iris_logo.png" alt="Iris" />
+      </a>
+    </div>
+    <p class="authors">
+      <a href="https://adonis-galaxy.github.io/homepage/">Ziyao Zeng</a><sup>*1</sup>,
+      <a href="https://jingchengni.com/">Jingcheng Ni</a><sup>*2</sup>,
+      <a href="https://preacherwhite.github.io/">Daniel Wang</a><sup>1</sup>,
+      <a href="https://patrickqrim.github.io/">Patrick Rim</a><sup>1</sup>,
+      <a href="https://fuzzythecat.github.io/">Younjoon Chung</a><sup>1</sup>,
+      <a href="https://fredfyyang.github.io/">Fengyu Yang</a><sup>1</sup>,
+      <a href="https://www.image.cau.ac.kr/people/director">Byung-Woo Hong</a><sup>3</sup>,
+      <a href="#">Alex Wong</a><sup>1</sup>
+    </p>
+    <p class="affiliations">
+      <sup>1</sup> Yale University &nbsp; <sup>2</sup> Brown University &nbsp; <sup>3</sup> Chung-Ang University<br />
+      <small>* Equal contribution</small>
+    </p>
+    <div class="links">
+      <a href="https://arxiv.org/abs/2411.16750">Paper</a>
+      <a href="https://github.com/Adonis-galaxy/Iris">Code (Coming Soon)</a>
+    </div>
+
+    <h2>Abstract</h2>
+    <div class="abstract">
+      Traditional monocular depth estimation suffers from inherent ambiguity and visual nuisances. We demonstrate that language can enhance monocular depth estimation by providing an additional condition (rather than images alone) aligned with plausible 3D scenes, thereby reducing the solution space for depth estimation. This conditional distribution is learned during the text-to-image pre-training of diffusion models. To generate images under various viewpoints and layouts that precisely reflect textual descriptions, the model implicitly models object sizes, shapes, and scales, their spatial relationships, and the overall scene structure. In this paper, <strong class="iris-highlight">Iris</strong>, we investigate the benefits of our strategy to integrate text descriptions into training and inference of diffusion-based depth estimation models. We experiment with three different diffusion-based monocular depth estimators (Marigold, Lotus, and E2E-FT) and their variants. By training on HyperSim and Virtual KITTI, and evaluating on NYUv2, KITTI, ETH3D, ScanNet, and DIODE, we find that our strategy improves the overall monocular depth estimation accuracy, especially in small areas. It also improves the model's depth perception of specific regions described in the text. We find that by providing more details in the text, the depth prediction can be iteratively refined. Simultaneously, we find that language can act as a constraint to accelerate the convergence of both training and the inference diffusion trajectory. Code and generated text data will be released upon acceptance.
+    </div>
+
+    <h2>Teaser</h2>
+    <div class="teaser-fig teaser-small">
+      <img src="assets/teaser.png" alt="Iris teaser: language conditions reduce depth solution space" />
+    </div>
+    <p class="caption">
+      <strong>Integrating language into diffusion models enhances monocular depth estimation</strong> by providing an additional condition associated with plausible 3D scenes, thus reducing the solution space. The conditional distribution is learned during text-to-image pre-training and associated with depth during fine-tuning with image-text-depth pairs.
+    </p>
+
+    <h2>Key Findings</h2>
+    <ul class="findings">
+      <li><strong>Finding 1:</strong> Language provides a condition about the existence, geometric properties, and spatial relationships of objects and scene structures, helping depth estimators reduce the depth solution space and better perceive depth, especially in insignificant or ambiguous regions.</li>
+      <li><strong>Finding 2:</strong> Depth prediction can be iteratively refined with more details in the text description. This is particularly beneficial for regions that pose challenges to vision systems (small size, poor illumination, occlusion, or high visual similarity to the background).</li>
+      <li><strong>Finding 3:</strong> Language serves as a constraint that accelerates training convergence and provides a good initialization of the diffusion trajectory to speed up inference.</li>
+    </ul>
+
+    <h2>Pipeline</h2>
+    <div class="teaser-fig">
+      <img src="assets/pipeline.png" alt="Pipeline: text-conditioned diffusion for depth" />
+    </div>
+    <p class="caption">
+      We train the diffusion model to predict noise in the noisy depth latent conditioned on the input image and language description. At inference, the model denoises from Gaussian noise to a depth latent, then decodes to the depth map via a frozen VAE decoder.
+    </p>
+
+    <h2>Results</h2>
+    <p class="results-intro">
+      Integrating language consistently improves Marigold, Lotus-D, Lotus-G, and E2E-FT across NYUv2, KITTI, ETH3D, ScanNet, and DIODE. Below: selected metrics (δ₁↑, AbsRel↓). Our “Train & Infer” text variants are highlighted.
+    </p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Method</th>
+            <th>NYUv2 δ₁↑</th>
+            <th>NYUv2 AbsRel↓</th>
+            <th>KITTI δ₁↑</th>
+            <th>KITTI AbsRel↓</th>
+            <th>ETH3D δ₁↑</th>
+            <th>ScanNet δ₁↑</th>
+            <th>DIODE δ₁↑</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Marigold</td><td>95.9</td><td>6.0</td><td>90.4</td><td>10.5</td><td>95.1</td><td>94.5</td><td>77.2</td></tr>
+          <tr class="highlight-row"><td><strong>Marigold + Text (Train & Infer)</strong></td><td><strong>95.9</strong></td><td><strong>5.9</strong></td><td><strong>90.6</strong></td><td><strong>10.4</strong></td><td><strong>95.7</strong></td><td><strong>94.9</strong></td><td><strong>78.9</strong></td></tr>
+          <tr><td>Lotus-D*</td><td>96.6</td><td>5.6</td><td>92.2</td><td>8.7</td><td>96.8</td><td>96.0</td><td>74.1</td></tr>
+          <tr class="highlight-row"><td><strong>Lotus-D + Text (Train & Infer)</strong></td><td><strong>96.8</strong></td><td><strong>5.4</strong></td><td><strong>93.0</strong></td><td><strong>8.4</strong></td><td><strong>97.0</strong></td><td><strong>96.6</strong></td><td><strong>74.2</strong></td></tr>
+          <tr><td>Lotus-G*</td><td>95.2</td><td>6.7</td><td>92.2</td><td>8.9</td><td>95.7</td><td>93.7</td><td>71.7</td></tr>
+          <tr class="highlight-row"><td><strong>Lotus-G + Text (Train & Infer)</strong></td><td><strong>96.3</strong></td><td><strong>5.9</strong></td><td><strong>92.8</strong></td><td><strong>8.6</strong></td><td><strong>96.3</strong></td><td><strong>95.3</strong></td><td><strong>72.5</strong></td></tr>
+          <tr><td>E2E-FT*</td><td>95.4</td><td>6.9</td><td>90.1</td><td>10.5</td><td>94.1</td><td>94.6</td><td>76.4</td></tr>
+          <tr class="highlight-row"><td><strong>E2E-FT + Text (Train & Infer)</strong></td><td><strong>96.3</strong></td><td><strong>6.2</strong></td><td><strong>91.7</strong></td><td><strong>9.7</strong></td><td><strong>94.7</strong></td><td>95.0</td><td><strong>77.0</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Qualitative Results</h2>
+    <p class="results-intro">
+      Language improves depth for specified or ambiguous regions (e.g. soap dispenser, lamps, kitchen in background, parked car, distant signs). Iterative refinement with more detailed text further improves specified regions.
+    </p>
+    <div class="fig-grid">
+      <div class="fig-item">
+        <img src="assets/vis_nyu.png" alt="NYUv2 visualizations" />
+        <p class="caption">NYUv2: better depth for objects mentioned in the text (e.g. soap dispenser, lamps).</p>
+      </div>
+      <div class="fig-item">
+        <img src="assets/vis_kitti.png" alt="KITTI visualizations" />
+        <p class="caption">KITTI: improved depth for described objects (e.g. parked car, distant sign).</p>
+      </div>
+      <div class="fig-item">
+        <img src="assets/vis_control.png" alt="Iterative refinement with language" />
+        <p class="caption">Iterative depth refinement with more detailed language.</p>
+      </div>
+      <div class="fig-item fig-small">
+        <img src="assets/3D_recon.png" alt="Language improves depth for specified regions" />
+        <p class="caption">Language improves depth perception of specified regions (e.g. kitchen in background).</p>
+      </div>
+    </div>
+
+    <h2>Convergence &amp; Efficiency</h2>
+    <div class="fig-grid">
+      <div class="fig-item figure-mid">
+        <img src="assets/training_convergence.png" alt="Training convergence" />
+        <p class="caption">Integrating language accelerates training convergence.</p>
+      </div>
+      <div class="fig-item figure-mid">
+        <img src="assets/denoising_steps.png" alt="Fewer denoising steps" />
+        <p class="caption">Fewer denoising steps needed at inference with language (e.g. ~10 vs ~25 steps).</p>
+      </div>
+    </div>
+
+    <h2>BibTeX</h2>
+    <pre class="bibtex">@article{zeng2024iris,
+  title={Iris: Integrating Language into Diffusion-based Monocular Depth Estimation},
+  author={Zeng, Ziyao and Ni, Jingcheng and Wang, Daniel and Rim, Patrick and Chung, Younjoon and Yang, Fengyu and Hong, Byung-Woo and Wong, Alex},
+  journal={arXiv preprint arXiv:2411.16750},
+  year={2024}
+}</pre>
+
+    <footer>
+      Project page for Iris. For any questions, please contact: <a href="mailto:ziyao.zeng@yale.edu">ziyao.zeng@yale.edu</a>
+    </footer>
+  </div>
+</body>
+</html>
