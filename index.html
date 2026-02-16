@@ -7,7 +7,7 @@
   <link rel="icon" href="assets/Iris_logo.png" type="image/png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
   <style>
     :root {
       --bg: #fafbfc;
@@ -31,15 +31,16 @@
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
       background: var(--bg);
       color: var(--text);
-      line-height: 1.68;
+      line-height: 1.72;
+      letter-spacing: 0.02em;
       -webkit-font-smoothing: antialiased;
       font-size: 16px;
     }
     .wrap {
-      max-width: 840px;
+      max-width: 800px;
       margin: 0 auto;
       padding: 3.5rem 2rem 5rem;
     }
@@ -67,9 +68,9 @@
       font-size: clamp(1.85rem, 4.5vw, 2.35rem);
       font-weight: 400;
       margin: 0;
-      letter-spacing: -0.025em;
+      letter-spacing: 0.02em;
       color: var(--text);
-      line-height: 1.22;
+      line-height: 1.28;
     }
     .title-note {
       font-size: 0.9rem;
@@ -133,7 +134,7 @@
       font-weight: 400;
       margin: 3.25rem 0 1.1rem;
       color: var(--text);
-      letter-spacing: -0.02em;
+      letter-spacing: 0.015em;
       position: relative;
       padding-left: 1rem;
     }
@@ -155,7 +156,8 @@
       margin-bottom: 2rem;
       font-size: 0.9375rem;
       color: var(--text-muted);
-      line-height: 1.75;
+      line-height: 1.8;
+      letter-spacing: 0.018em;
       box-shadow: var(--shadow);
       border: 1px solid var(--border);
       border-left: 4px solid var(--iris-green);
@@ -180,7 +182,8 @@
       color: var(--text-muted);
       margin-top: 0.6rem;
       margin-bottom: 2rem;
-      line-height: 1.55;
+      line-height: 1.6;
+      letter-spacing: 0.015em;
     }
     .caption strong { color: var(--text); }
     ul.findings {
@@ -194,6 +197,7 @@
       margin-bottom: 0.85rem;
       font-size: 0.9375rem;
       color: var(--text-muted);
+      letter-spacing: 0.015em;
     }
     ul.findings li::before {
       content: '';
@@ -231,6 +235,8 @@
       color: var(--text-muted);
       font-size: 0.9375rem;
       margin-bottom: 1.25rem;
+      letter-spacing: 0.018em;
+      line-height: 1.7;
     }
     .table-wrap { overflow-x: auto; margin-bottom: 2rem; }
     table {
